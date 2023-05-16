@@ -22,4 +22,28 @@ describe("POST /", function () {
       .send();
     expect(resp.statusCode).toEqual(400);
   });
+
+  test("throws error if missing field", async function () {
+    const resp = await request(app).post("/shipments").send({
+      productId: 1000,
+      name: "Test Tester",
+      addr: "100 Test St"
+    });
+
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.body.error.message[0]).toEqual("instance requires property \"zip\"");
+  });
+
+  test("throws error if incorrect type is entered", async function () {
+    const resp = await request(app).post("/shipments").send({
+      productId: 1000,
+      name: "Test Tester",
+      addr: "100 Test St",
+      zip: 12345-6789
+    });
+
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.body.error.message[0]).toEqual("instance.zip is not of a type(s) string");
+  });
+
 });
