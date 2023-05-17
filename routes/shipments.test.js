@@ -1,10 +1,19 @@
 "use strict";
 
+const shipFile = require("../shipItApi");
+shipFile.shipProduct = jest.fn();
+
 const request = require("supertest");
 const app = require("../app");
 
 
+
 describe("POST /", function () {
+  /**Mock shipProduct before every test */
+  beforeEach(function () {
+    shipFile.shipProduct.mockReturnValue(12345);
+  });
+
   test("valid", async function () {
     const resp = await request(app).post("/shipments").send({
       productId: 1000,
@@ -13,7 +22,7 @@ describe("POST /", function () {
       zip: "12345-6789",
     });
 
-    expect(resp.body).toEqual({ shipped: expect.any(Number) });
+    expect(resp.body).toEqual({ shipped: 12345 });
   });
 
   test("throws error if empty request body", async function () {
@@ -39,7 +48,7 @@ describe("POST /", function () {
       productId: 1000,
       name: "Test Tester",
       addr: "100 Test St",
-      zip: 12345-6789
+      zip: 12345 - 6789
     });
 
     expect(resp.statusCode).toEqual(400);
